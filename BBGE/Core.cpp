@@ -167,7 +167,7 @@ void Core::resetGraphics(int w, int h, int fullscreen, int vsync, int bpp)
 	shutdownGraphicsLibrary();
 
 	initGraphicsLibrary(w, h, fullscreen, vsync, bpp);
-	
+
 	enable2DWide(w, h);
 
 	reloadResources();
@@ -896,7 +896,7 @@ Core::Core(const std::string &filesystem, const std::string& extraDataDir, int n
 
 	if (userDataSubFolder.empty())
 		userDataSubFolder = appName;
-		
+
 #if defined(BBGE_BUILD_UNIX)
 	const char *envr = getenv("HOME");
 	if (envr == NULL)
@@ -961,7 +961,7 @@ Core::Core(const std::string &filesystem, const std::string& extraDataDir, int n
 	debugLogActive = true;
 
 	debugLogTextures = true;
-	
+
 	grabInputOnReentry = -1;
 
 	srand(time(NULL));
@@ -1285,7 +1285,7 @@ void Core::init()
 	{
 		exit_error("Failed to init SDL");
 	}
-	
+
 #endif
 	/*
 #ifdef BBGE_BUILD_DIRECTX
@@ -1908,15 +1908,15 @@ static bool lookup_all_glsyms(void)
 
 
 bool Core::initGraphicsLibrary(int width, int height, bool fullscreen, int vsync, int bpp, bool recreate)
-{	
+{
 	static bool didOnce = false;
-	
+
 	aspectX = width;
 	aspectY = height;
 
 	aspect = (aspectX/aspectY);
 
-	
+
 
 	this->width = width;
 	this->height = height;
@@ -2065,12 +2065,12 @@ bool Core::initGraphicsLibrary(int width, int height, bool fullscreen, int vsync
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);				// Black Background
 	glClearDepth(1.0);								// Depth Buffer Setup
 	glDisable(GL_CULL_FACE);
-	
+
 	//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 	glLoadIdentity();
-	
+
 	glFinish();
 
 #ifdef BBGE_BUILD_GLFW
@@ -2100,7 +2100,7 @@ bool Core::initGraphicsLibrary(int width, int height, bool fullscreen, int vsync
 #endif
 
 	setClearColor(clearColor);
-	
+
 	clearBuffers();
 	showBuffer();
 
@@ -2129,7 +2129,7 @@ void Core::enumerateScreenModes()
 		debugLog("No modes available!");
 		return;
 	}
-	
+
 	for (int i = 0; i < modecount; i++) {
 		SDL_GetDisplayMode(0, i, &mode);
 		if (mode.w && mode.h && (mode.w > mode.h))
@@ -2427,7 +2427,7 @@ void Core::setPixelScale(int pixelScaleX, int pixelScaleY)
 	std::ostringstream os;
 	os << "virtual(" << virtualWidth << ", " << virtualHeight << ")";
 	debugLog(os.str());
-	
+
 	vw2 = virtualWidth/2;
 	vh2 = virtualHeight/2;
 
@@ -2499,7 +2499,7 @@ void Core::enable2D(int pixelScaleX, int pixelScaleY, bool forcePixelScale)
 		return;
 	}
 	*/
-	
+
 #ifdef BBGE_BUILD_OPENGL
 
     GLint viewPort[4];
@@ -2535,7 +2535,7 @@ void Core::enable2D(int pixelScaleX, int pixelScaleY, bool forcePixelScale)
 
 	viewOffY = (viewPort[3] - vh) * 0.5f;
 	*/
-	
+
 
 	/*
 	std::ostringstream os;
@@ -2554,7 +2554,7 @@ void Core::enable2D(int pixelScaleX, int pixelScaleY, bool forcePixelScale)
 	}
 	*/
 
-	
+
 //#else
 //	int offx=0,offy=0;
 //#endif
@@ -2672,7 +2672,7 @@ void Core::enable2D(int pixelScaleX, int pixelScaleY, bool forcePixelScale)
 		//debugLog("HEEEREEE");
 		float widthFactor = core->width/float(pixelScaleX);
 		float heightFactor = core->height/float(pixelScaleY);
-		//float heightFactor = 
+		//float heightFactor =
 		core->globalResolutionScale = Vector(widthFactor,heightFactor,1.0f);
 		setPixelScale(pixelScaleX, pixelScaleY);
 
@@ -2691,7 +2691,7 @@ void Core::enable2D(int pixelScaleX, int pixelScaleY, bool forcePixelScale)
 
 	//setupRenderPositionAndScale();
 
-	
+
 }
 
 void Core::quitNestedMain()
@@ -3001,7 +3001,7 @@ void Core::main(float runTime)
 				if (wasInactive)
 				{
 					debugLog("WINDOW ACTIVE");
-					
+
 					setReentryInputGrab(1);
 
 					wasInactive = false;
@@ -3049,7 +3049,7 @@ void Core::main(float runTime)
 					sound->resume();
 
 					resetTimer();
-					
+
 					SDL_ShowCursor(SDL_DISABLE);
 
 					continue;
@@ -3160,7 +3160,7 @@ void Core::main(float runTime)
 			saveScreenshotTGA(getScreenshotFilename());
 			prepScreen(0);
 		}
-		
+
 		// wait
 		if (timeUpdateType == TIMEUPDATE_FIXED)
 		{
@@ -3171,7 +3171,7 @@ void Core::main(float runTime)
 
 			avg_diff_count++;
 			avg_diff += diff;
-			
+
 			char buf[256];
 			sprintf(buf, "real_dt: %5.4f \n realFPS: %5.4f \n fixedFPS: %5.4f \n diff: %5.4f \n delay: %5.4f \n avgdiff: %5.8f", float(real_dt), float(real_dt>0?(1.0f/real_dt):0.0f), float(fixedFPS), float(diff), float(diff*1000), float(avg_diff/(float)avg_diff_count));
 			fpsDebugString = buf;
@@ -3184,7 +3184,7 @@ void Core::main(float runTime)
 
 #ifdef BBGE_BUILD_SDL
 			nowTicks = SDL_GetTicks();
-			
+
 			if (diff > 0)
 			{
 				//Sleep(diff*1000);
@@ -3198,7 +3198,7 @@ void Core::main(float runTime)
 			//nowTicks = SDL_GetTicks();
 #endif
 
-		}	
+		}
 	}
 	if (verbose) debugLog("bottom of function");
 	quitNestedMainFlag = false;
@@ -3566,7 +3566,7 @@ void Core::pollEvents()
 
 	SDL_Event event;
 
-	
+
 
 	while ( SDL_PollEvent (&event) ) {
 		switch (event.type) {
@@ -4866,7 +4866,7 @@ void Core::saveSizedScreenshotTGA(const std::string &filename, int sz, int crop3
 	debugLog(os.str());
 
 	glRasterPos2i(0, 0);
-	
+
 	/*
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 
@@ -5155,6 +5155,15 @@ void Core::setupFileAccess()
 		debugLog("Mounting extra data dir: " + _extraDataDir);
 		vfs.Mount(_extraDataDir.c_str(), "");
 	}
+
+	std::ofstream out("filetree.txt");
+	if(out)
+    {
+        vfs.debugDumpTree(out, "");
+        out.close();
+        exit(0);
+    }
+
 
 	debugLog("Done");
 #endif

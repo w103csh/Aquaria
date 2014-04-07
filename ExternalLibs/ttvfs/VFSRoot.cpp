@@ -1,7 +1,9 @@
 // VFSRoot.cpp - glues it all together and makes use simple
 // For conditions of distribution and use, see copyright notice in VFS.h
 
-#include <iostream> // for debug only, see EOF
+#include <iostream>
+#include <set>
+
 
 #include "VFSInternal.h"
 #include "VFSRoot.h"
@@ -11,6 +13,7 @@
 #include "VFSFile.h"
 #include "VFSLoader.h"
 #include "VFSArchiveLoader.h"
+#include "VFSDirView.h"
 
 #ifdef _DEBUG
 #  include <cassert>
@@ -213,54 +216,54 @@ void Root::ClearGarbage()
 
 // DEBUG STUFF
 
-
 struct _DbgParams
 {
-    _DbgParams(std::ostream& os_, DirBase *parent_, const std::string& sp_)
-        : os(os_), parent(parent_), sp(sp_) {}
+    _DbgParams(std::ostream& os_, const std::string& path, const std::string& sp_)
+        : os(os_), mypath(path), sp(sp_) {}
 
     std::ostream& os;
-    DirBase *parent;
+    std::string mypath;
     const std::string& sp;
+    std::set<std::string> dirnames;
 };
 
 static void _DumpFile(File *vf, void *user)
 {
     _DbgParams& p = *((_DbgParams*)user);
-
-    p.os << p.sp << "f|" << vf->name() << " [" << vf->getType() << ", ref " << vf->getRefCount() << ", 0x" << vf << "]";
-
-    if(strncmp(p.parent->fullname(), vf->fullname(), p.parent->fullnameLen()))
-        p.os << " <-- {" << vf->fullname() << "} ***********";
-
-    p.os << std::endl;
+    p.os << p.sp << " F:" << vf->name() << " [" << vf->getType() << ", ref " << vf->getRefCount() << ", 0x" << vf << "]" << std::endl;
 }
 
-static void _DumpTreeRecursive(DirBase *vd, void *user)
+
+static void _DumpDir(DirBase *vd, void *user)
 {
     _DbgParams& p = *((_DbgParams*)user);
+    p.dirnames.insert(vd->name());
+    p.os << p.sp << "D : " << vd->name() << " [" << vd->getType() << ", ref " << vd->getRefCount() << ", 0x" << vd << "]" << std::endl;
+}
+
+static void _DumpTree(_DbgParams& p, Root& vfs)
+{
+    p.os << ">> [" << p.mypath << "]" << std::endl;
+    DirView view;
+    vfs.FillDirView(p.mypath.c_str(), view);
+
+    view.forEachDir(_DumpDir, &p);
+    view.forEachFile(_DumpFile, &p);
 
     std::string sub = p.sp + "  ";
-
-    p.os << p.sp << "d|" << vd->name() << " [" << vd->getType() << ", ref " << vd->getRefCount() << ", 0x" << vd << "]";
-
-    if(p.parent && strncmp(p.parent->fullname(), vd->fullname(), strlen(p.parent->fullname())))
-        p.os << " <-- {" << vd->fullname() << "} ***********";
-    p.os << std::endl;
-
-    _DbgParams recP(p.os, vd, sub);
-
-    vd->forEachDir(_DumpTreeRecursive, &recP);
-
-    vd->forEachFile(_DumpFile, &recP);
+    for(std::set<std::string>::iterator it = p.dirnames.begin(); it != p.dirnames.end(); ++it)
+    {
+        _DbgParams recP(p.os, joinPath(p.mypath, it->c_str()), sub);
+        _DumpTree(recP, vfs);
+    }
 
 }
 
-void Root::debugDumpTree(std::ostream& os, Dir *start /* = NULL */)
+void Root::debugDumpTree(std::ostream& os, const char *path)
 {
-    _DbgParams recP(os, NULL, "");
-    DirBase *d = start ? start : GetDirRoot();
-    _DumpTreeRecursive(d, &recP);
+    os << ">>> FILE TREE DUMP <<<" << std::endl;
+    _DbgParams recP(os, path, "");
+    _DumpTree(recP, *this);
 }
 
 
