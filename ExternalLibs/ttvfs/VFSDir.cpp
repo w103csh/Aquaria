@@ -197,6 +197,13 @@ void Dir::forEachFile(FileEnumCallback f, void *user /* = NULL */, bool safe /* 
         _iterFiles(_files, f, user);
 }
 
+void Dir::forEachDir(DirEnumCallback f, void *user /* = NULL */, bool safe /* = false */)
+{
+    load();
+    DirBase::forEachDir(f, user, safe);
+}
+
+
 
 bool Dir::add(File *f)
 {

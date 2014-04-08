@@ -732,6 +732,15 @@ void DSQ::debugMenu()
 					dsq->game->avatar->health = h;
 
 				}
+                else if (c == 'V')
+                {
+                    std::ofstream out("filetree-2.txt");
+                    if(out)
+                    {
+                        vfs.debugDumpTree(out, "");
+                        out.close();
+                    }
+                }
 			}
 
 

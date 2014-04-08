@@ -131,6 +131,7 @@ public:
     virtual void load() = 0;
 
     void forEachFile(FileEnumCallback f, void *user = NULL, bool safe = false);
+    void forEachDir(DirEnumCallback f, void *user = NULL, bool safe = false);
 
     virtual void clearGarbage();
 

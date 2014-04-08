@@ -230,7 +230,7 @@ struct _DbgParams
 static void _DumpFile(File *vf, void *user)
 {
     _DbgParams& p = *((_DbgParams*)user);
-    p.os << p.sp << " F:" << vf->name() << " [" << vf->getType() << ", ref " << vf->getRefCount() << ", 0x" << vf << "]" << std::endl;
+    p.os << p.sp << " F:" << vf->fullname() << " [" << vf->getType() << ", ref " << vf->getRefCount() << ", 0x" << vf << "]" << std::endl;
 }
 
 
@@ -238,7 +238,7 @@ static void _DumpDir(DirBase *vd, void *user)
 {
     _DbgParams& p = *((_DbgParams*)user);
     p.dirnames.insert(vd->name());
-    p.os << p.sp << "D : " << vd->name() << " [" << vd->getType() << ", ref " << vd->getRefCount() << ", 0x" << vd << "]" << std::endl;
+    p.os << p.sp << "D : " << vd->fullname() << " [" << vd->getType() << ", ref " << vd->getRefCount() << ", 0x" << vd << "]" << std::endl;
 }
 
 static void _DumpTree(_DbgParams& p, Root& vfs)

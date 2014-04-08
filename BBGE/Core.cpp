@@ -5156,12 +5156,11 @@ void Core::setupFileAccess()
 		vfs.Mount(_extraDataDir.c_str(), "");
 	}
 
-	std::ofstream out("filetree.txt");
+	std::ofstream out("filetree-1.txt");
 	if(out)
     {
         vfs.debugDumpTree(out, "");
         out.close();
-        exit(0);
     }
 
 
