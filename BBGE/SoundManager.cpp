@@ -136,22 +136,16 @@ FMOD_RESULT F_CALLBACK myopen(const char *name, int unicode, unsigned int *files
 {
     if (name)
     {
-        VFILE *fp;
-
-        fp = vfopen(name, "rb");
+        VFILE *fp = vfopen(name, "rb");
         if (!fp)
+            return FMOD_ERR_FILE_NOTFOUND;
+        size_t sz = 0;
+        if(vfsize(fp, &sz) < 0)
         {
+            vfclose(fp);
             return FMOD_ERR_FILE_NOTFOUND;
         }
-
-#ifdef BBGE_BUILD_VFS
-        *filesize = fp->size();
-#else
-        vfseek(fp, 0, SEEK_END);
-        *filesize = ftell(fp);
-        vfseek(fp, 0, SEEK_SET);
-#endif
-
+        *filesize = (unsigned int)sz;
         *userdata = (void *)0x12345678;
         *handle = fp;
     }

@@ -74,7 +74,7 @@ void Root::AddVFSDir(DirBase *dir, const char *subdir /* = NULL */)
 {
     if(!subdir)
         subdir = dir->fullname();
-    InternalDir *into = safecastNonNull<InternalDir*>(merged->getDir(subdir, true, true, false));
+    InternalDir *into = safecastNonNull<InternalDir*>(merged->_getDirEx(subdir, subdir, true, true, false).first);
     into->_addMountDir(dir);
 }
 
@@ -165,7 +165,8 @@ InternalDir *Root::_GetDirByLoader(VFSLoader *ldr, const char *fn, const char *u
     InternalDir *ret = NULL;
     if(realdir)
     {
-        ret = safecastNonNull<InternalDir*>(merged->getDir(fn, true, true, false));
+        //ret = safecastNonNull<InternalDir*>(merged->_getDirEx(fn, fn, true, true, false).first);
+        ret = safecastNonNull<InternalDir*>(merged->_createAndInsertSubtree(fn));
         ret->_addMountDir(realdir);
     }
     return ret;
@@ -192,7 +193,7 @@ DirBase *Root::GetDir(const char* dn, bool create /* = false */)
                 break;
 
         if(!vd && create)
-            vd = safecastNonNull<InternalDir*>(merged->getDir(dn, true)); // typecast is for debug checking only
+            vd = safecastNonNull<InternalDir*>(merged->_createAndInsertSubtree(dn)); // typecast is for debug checking only
     }
 
     //printf("VFS: GetDir '%s' -> '%s' (%s:%p)\n", dn, vd ? vd->fullname() : "NULL", vd ? vd->getType() : "?", vd);
@@ -242,11 +243,12 @@ static void _DumpFile(File *vf, void *user)
 static void _DumpDir(DirBase *vd, void *user)
 {
     _DbgParams& p = *((_DbgParams*)user);
-    p.dirnames.insert(vd->name());
+    if(!(vd->fullname()[0] == '/' && vd->fullnameLen() > 1)) // don't recurse down the root dir.
+        p.dirnames.insert(vd->name());
     p.os << p.sp << "D : " << vd->fullname() << " [" << vd->getType() << ", ref " << vd->getRefCount() << ", 0x" << vd << "]" << std::endl;
 }
 
-static void _DumpTree(_DbgParams& p, Root& vfs)
+static void _DumpTree(_DbgParams& p, Root& vfs, int level)
 {
     p.os << ">> [" << p.mypath << "]" << std::endl;
     DirView view;
@@ -255,20 +257,22 @@ static void _DumpTree(_DbgParams& p, Root& vfs)
     view.forEachDir(_DumpDir, &p);
     view.forEachFile(_DumpFile, &p);
 
+    if(!level)
+        return;
+
     std::string sub = p.sp + "  ";
     for(std::set<std::string>::iterator it = p.dirnames.begin(); it != p.dirnames.end(); ++it)
     {
         _DbgParams recP(p.os, joinPath(p.mypath, it->c_str()), sub);
-        _DumpTree(recP, vfs);
+        _DumpTree(recP, vfs, level - 1);
     }
-
 }
 
-void Root::debugDumpTree(std::ostream& os, const char *path)
+void Root::debugDumpTree(std::ostream& os, const char *path, int level)
 {
     os << ">>> FILE TREE DUMP <<<" << std::endl;
     _DbgParams recP(os, path, "");
-    _DumpTree(recP, *this);
+    _DumpTree(recP, *this, level);
 }
 
 

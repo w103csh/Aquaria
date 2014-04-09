@@ -115,7 +115,7 @@ Dir *DiskLoader::LoadDir(const char *fn, const char * /*ignored*/)
 {
     printf("DiskLoader: Trying [%s]...\n", fn);
 
-    if(!IsDirectory(fn))
+    if(*fn != '/' && !IsDirectory(fn))
         return NULL;
 
     DiskDir *ret = NULL;
@@ -128,7 +128,7 @@ Dir *DiskLoader::LoadDir(const char *fn, const char * /*ignored*/)
         fn = &t[0];
 #endif
 
-    ret = safecastNonNull<DiskDir*>(getRoot()->getDir(fn, true, false));
+    ret = safecastNonNull<DiskDir*>(getRoot()->_createAndInsertSubtree(fn));
 
 #if !defined(_WIN32) && defined(VFS_IGNORE_CASE)
     VFS_STACK_FREE(t);

@@ -57,6 +57,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	Vector unchange;
 #endif
 
+#ifdef BBGE_BUILD_VFS
+#include <ttvfs.h>
+#endif
+
 Core *core = 0;
 
 #ifdef BBGE_BUILD_WINDOWS
@@ -5146,15 +5150,17 @@ void Core::setupFileAccess()
 	vfs.AddLoader(dloader);
 	vfs.AddArchiveLoader(new ttvfs::VFSZipArchiveLoader);
 
-	vfs.AddVFSDir(new ttvfs::DiskDir("/", dloader), "");
+	//vfs.AddVFSDir(new ttvfs::DiskDir("/", dloader), "");
 
 
     //vfs.Mount("/", "");
-    ttvfs::DirBase *home = vfs.GetDir("/home/fg");
+    /*ttvfs::DirBase *home = vfs.GetDir("/home/fg");
     if(home)
         debugLog(home->fullname());
+    else
+        exit(42);*/
 
-    exit(0);
+    //exit(0);
 	vfs.Mount("override", "");
 
 	// If we ever want to read from a container...
@@ -5166,12 +5172,12 @@ void Core::setupFileAccess()
 		vfs.Mount(_extraDataDir.c_str(), "");
 	}
 
-	std::ofstream out("filetree-1.txt");
+	/*std::ofstream out("filetree-1.txt");
 	if(out)
     {
         vfs.debugDumpTree(out, "");
         out.close();
-    }
+    }*/
 
 
 	debugLog("Done");

@@ -119,11 +119,10 @@ void InternalDir::forEachDir(DirEnumCallback f, void *user /* = NULL */, bool sa
 
 bool InternalDir::fillView(const char *path, DirView& view)
 {
-    SkipSelfPath(path);
     view.init(path);
-    size_t len = strlen(path) + 1;
+    size_t len = view.fullnameLen() + 1;
     char *pathcopy = (char*)VFS_STACK_ALLOC(len);
-    memcpy(pathcopy, path, len);
+    memcpy(pathcopy, view.fullname(), len);
     bool added = _addToView(pathcopy, view);
     VFS_STACK_FREE(pathcopy);
     return added;
@@ -134,6 +133,7 @@ bool InternalDir::fillView(const char *path, DirView& view)
 bool InternalDir::_addToView(char *path, DirView& view)
 {
     bool added = false;
+    SkipSelfPath(path);
 
     if(!*path)
     {
@@ -145,7 +145,6 @@ bool InternalDir::_addToView(char *path, DirView& view)
     }
     else
     {
-        SkipSelfPath(path);
         char dummy = 0;
         char *slashpos = strchr(path, '/');
         char *tail = slashpos ? slashpos+1 : &dummy;

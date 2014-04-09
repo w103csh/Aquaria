@@ -103,7 +103,7 @@ public:
     DirBase *GetDir(const char* dn, bool create = false);
 
     // DEBUG STUFF
-    void debugDumpTree(std::ostream& os, const char *path);
+    void debugDumpTree(std::ostream& os, const char *path, int level);
 
 protected:
 

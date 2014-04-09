@@ -45,6 +45,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	#include <sys/stat.h>
 #endif
 
+#ifdef BBGE_BUILD_VFS
+#include <ttvfs.h>
+#endif
+
 #ifdef BBGE_BUILD_UNIX
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -737,7 +741,7 @@ void DSQ::debugMenu()
                     std::ofstream out("filetree-2.txt");
                     if(out)
                     {
-                        vfs.debugDumpTree(out, "");
+                        vfs.debugDumpTree(out, "", -1);
                         out.close();
                     }
                 }
@@ -2148,7 +2152,7 @@ void DSQ::loadMods()
 	std::ostringstream os;
 	os << "loadMods done, " << modEntries.size() << " entries";
 	debugLog(os.str());
-	exit(0);
+	//exit(0);
 }
 
 void DSQ::applyPatches()
@@ -2220,16 +2224,22 @@ void DSQ::refreshResourcesForPatch(const std::string& name)
 	std::ostringstream os;
 	os << "refreshResourcesForPatch - " << files.size() << " to refresh";
 	debugLog(os.str());
-
+	int reloaded = 0;
 	if(files.size())
 	{
 		for(int i = 0; i < dsq->resources.size(); ++i)
 		{
 			Resource *r = dsq->resources[i];
 			if(files.find(r->name) != files.end())
+			{
 				r->reload();
+				++reloaded;
+			}
 		}
 	}
+	os.str("");
+	os << "refreshResourcesForPatch - " << reloaded << " textures reloaded";
+	debugLog(os.str());
 }
 #else
 void DSQ::refreshResourcesForPatch(const std::string& name) {}

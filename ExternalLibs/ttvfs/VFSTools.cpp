@@ -317,8 +317,10 @@ void FixPath(std::string& s)
         s.clear();
         return;
     }
+    if(s.c_str() != p)
+        s = p;
     size_t len = s.length();
-    while(len)
+    while(len > 1) // remove all trailing slashes unless the first char is a slash -- leave it there for absolute unix paths
     {
         char end = s[len - 1];
         if(end == '/' || end == '\\') // strip trailing '/'
