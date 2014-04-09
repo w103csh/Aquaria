@@ -626,6 +626,7 @@ void forEachFile(std::string path, std::string type, void callback(const std::st
 	ttvfs::DirView view;
 	if(!vfs.FillDirView(path.c_str(), view))
 	{
+	    debugLog(std::string("forEachFile [") + view.fullname() + "]");
 		debugLog("Path '" + path + "' does not exist");
 		return;
 	}
@@ -634,6 +635,7 @@ void forEachFile(std::string path, std::string type, void callback(const std::st
 	dat.ext = type.length() ? type.c_str() : NULL;
 	dat.param = param;
 	dat.callback = callback;
+	debugLog(std::string("forEachFile [") + view.fullname() + "]");
 	view.forEachFile(forEachFile_vfscallback, &dat, true);
 
 	return;

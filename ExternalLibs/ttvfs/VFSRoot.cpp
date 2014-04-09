@@ -99,6 +99,7 @@ void Root::AddArchiveLoader(VFSArchiveLoader *ldr)
 {
     archLdrs.push_back(ldr);
 }
+
 Dir *Root::AddArchive(const char *arch, void *opaque /* = NULL */)
 {
     return AddArchive(GetFile(arch), arch, opaque);
@@ -170,8 +171,11 @@ InternalDir *Root::_GetDirByLoader(VFSLoader *ldr, const char *fn, const char *u
     return ret;
 }
 
+#include <stdio.h>
+
 DirBase *Root::GetDir(const char* dn, bool create /* = false */)
 {
+    printf("Root  ::getDir [%s]\n", dn);
     const char *unmangled = dn;
     std::string fixed = dn; // TODO: get rid of alloc
     FixPath(fixed);
@@ -203,6 +207,7 @@ DirBase *Root::GetDirRoot()
 
 bool Root::FillDirView(const char *path, DirView& view)
 {
+    printf("Root::FillDirView [%s]\n", path);
     return merged->fillView(path, view);
 }
 

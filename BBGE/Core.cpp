@@ -5142,9 +5142,19 @@ void Core::setupFileAccess()
 
 	ttvfs_setroot(&vfs);
 
-	vfs.AddLoader(new ttvfs::DiskLoader);
+    ttvfs::DiskLoader *dloader = new ttvfs::DiskLoader;
+	vfs.AddLoader(dloader);
 	vfs.AddArchiveLoader(new ttvfs::VFSZipArchiveLoader);
 
+	vfs.AddVFSDir(new ttvfs::DiskDir("/", dloader), "");
+
+
+    //vfs.Mount("/", "");
+    ttvfs::DirBase *home = vfs.GetDir("/home/fg");
+    if(home)
+        debugLog(home->fullname());
+
+    exit(0);
 	vfs.Mount("override", "");
 
 	// If we ever want to read from a container...

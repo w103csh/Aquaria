@@ -40,11 +40,17 @@ File *DirBase::getFile(const char *fn)
     return f;
 }
 
+#include <stdio.h>
+
 DirBase *DirBase::getDir(const char *subdir, bool forceCreate /* = false */, bool lazyLoad /* = true */, bool useSubtrees /* = true */)
 {
+    printf("DirBase::getDir [%s] in [%s]\n", subdir, fullname());
     SkipSelfPath(subdir);
     if(!subdir[0])
-        return this;
+    {
+        DirBase *emptydir = getDirByName(subdir, lazyLoad, useSubtrees);
+        return emptydir ? emptydir : this;
+    }
 
     DirBase *ret = NULL;
     char *slashpos = (char *)strchr(subdir, '/');
@@ -58,7 +64,7 @@ DirBase *DirBase::getDir(const char *subdir, bool forceCreate /* = false */, boo
         char * const t = (char*)VFS_STACK_ALLOC(copysize + 1);
         memcpy(t, subdir, copysize);
         t[copysize] = 0;
-        
+
         if(DirBase *dir = getDirByName(t, lazyLoad, useSubtrees))
         {
             // TODO: get rid of recursion
@@ -229,7 +235,7 @@ bool Dir::addRecursive(File *f, size_t skip /* = 0 */)
 {
     if(!f)
         return false;
-    
+
     Dir *vdir = this;
     if(f->fullnameLen() - f->nameLen() > skip)
     {
@@ -283,7 +289,10 @@ DirBase *Dir::getDirByName(const char *dn, bool lazyLoad /* = true */, bool useS
     std::string fn2 = joinPath(fullname(), dn);
     sub = _loader->LoadDir(fn2.c_str(), fn2.c_str());
     if(sub)
+    {
         _subdirs[sub->name()] = sub;
+        printf("Lazy loaded: [%s]\n", sub->fullname());
+    }
     return sub;
 }
 

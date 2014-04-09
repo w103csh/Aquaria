@@ -171,7 +171,7 @@ DSQ::DSQ(const std::string& fileSystem, const std::string& extraDataDir)
 
 	almb = armb = 0;
 	bar_left = bar_right = bar_up = bar_down = barFade_left = barFade_right = 0;
-	
+
 	difficulty = DIFF_NORMAL;
 
 	/*
@@ -217,7 +217,7 @@ DSQ::DSQ(const std::string& fileSystem, const std::string& extraDataDir)
 	renderObjectLayers.resize(LR_MAX);
 
 	entities.resize(64, 0);
-	
+
 	//Emitter::particleLayer = LR_PARTICLES;
 	sortEnabled = false;
 	shakeCameraTimer = shakeCameraMag = 0;
@@ -264,7 +264,7 @@ void DSQ::onSwitchScreenMode()
 {
 	//if (!core->isNested() && !core->sound->isPlayingVoice())
 	{
-		
+
 #if defined(BBGE_BUILD_WINDOWS) || defined(BBGE_BUILD_UNIX)
 		if (getAltState()) {
 			toggleFullscreen();
@@ -405,7 +405,7 @@ void DSQ::centerText(const std::string &text)
 
 
 	BitmapText *t = new BitmapText(&font);
-	
+
 
 	t->position =pos;
 	t->alpha.ensureData();
@@ -504,7 +504,7 @@ void DSQ::loadFonts()
 	*/
 
 	//Texture::format = GL_LUMINANCE_ALPHA;
-	
+
 	//Texture::format = 0;
 }
 
@@ -515,7 +515,7 @@ void DSQ::onReloadResources()
 	loadFonts();
 
 	setTexturePointers();
-} 
+}
 
 void DSQ::debugMenu()
 {
@@ -828,14 +828,14 @@ void DSQ::setVersionLabelText()
 #ifdef AQUARIA_DEMO
 	os << " Demo";
 #endif
-	
+
 	os << " v" << VERSION_MAJOR << "." << VERSION_MINOR << "." << VERSION_REVISION;
-	
+
 	if (!isFinalCandidate && !isGoldMaster && VERSION_BETA)
 	{
 		os << "b" << VERSION_BETA;
 	}
-	
+
 	if (isFinalCandidate)
 	{
 		os << "fc" << VERSION_FC;
@@ -908,7 +908,7 @@ This build is not yet final, and as such there are a couple things lacking. They
 
 	useFrameBuffer = false;
 	gameSpeed = 1;
-	
+
 	// steam gets inited in here
 	Core::init();
 
@@ -973,7 +973,7 @@ This build is not yet final, and as such there are a couple things lacking. They
 
 	//core->messageBox("info", "loading user settings");
 	user.load(false);
-	
+
 	particleManager->setSize(user.video.numParticles);
 
 	fullscreen = user.video.full;
@@ -1093,7 +1093,7 @@ This build is not yet final, and as such there are a couple things lacking. They
 
 	Vector loadShift(2, 0);
 
-	
+
 	Vector sz(800.0f/1024.0f, 600.0f/768.0f);
 
 
@@ -1159,7 +1159,7 @@ This build is not yet final, and as such there are a couple things lacking. They
 
 	loadBit(LOAD_PARTICLES);
 
-	
+
 
 	debugLog("Loading Sound Cache...");
 		sound->loadSoundCache("sfx/cache/", ".ogg", loadBitForSoundCache);
@@ -1255,7 +1255,7 @@ This build is not yet final, and as such there are a couple things lacking. They
 	versionLabel->alpha = 0;
 	}
 	addRenderObject(versionLabel, LR_REGISTER_TEXT);
-	
+
 
 	subbox = new Quad();
 	subbox->position = Vector(400,580);
@@ -1376,7 +1376,7 @@ This build is not yet final, and as such there are a couple things lacking. They
 		overlay2->followCamera = 1;
 	}
 	addRenderObject(overlay2, LR_OVERLAY);
-	
+
 	overlay3 = new Quad;
 	{
 		overlay3->position = Vector(400,300);
@@ -1517,7 +1517,7 @@ This build is not yet final, and as such there are a couple things lacking. They
 	}*/
 
 	setMousePosition(core->center);
-	
+
 	//dsq->continuity.reset();
 
 	loadBit(LOAD_FINISHED);
@@ -1688,7 +1688,7 @@ void DSQ::recreateBlackBars()
 void DSQ::setBlackBarsColor(Vector color)
 {
 	if (bar_left && bar_right)
-	{	
+	{
 		bar_left->color = bar_right->color = barFade_left->color = barFade_right->color = color;
 	}
 }
@@ -1735,7 +1735,7 @@ int DSQ::getEntityLayerToLayer(int lcode)
 	if (lcode == -4)
 		return LR_ENTITIES_MINUS4; // in front of elements11
 	else if (lcode == -3)
-		return LR_ENTITIES_MINUS3; // in front of elements2 
+		return LR_ENTITIES_MINUS3; // in front of elements2
 	else if (lcode == -2)
 		return LR_ENTITIES_MINUS2; // in front of elements3
 	else if (lcode == -1)
@@ -1836,7 +1836,7 @@ int DSQ::getRandNote()
 
 	int r = -1;
 	int c = 0;
-	
+
 	while (r == -1 && c < 8)
 	{
 		r = rand()%8;
@@ -1913,7 +1913,7 @@ void DSQ::toggleVersionLabel(bool on)
 	float a = 0;
 	if (on)
 		a = 1;
-	
+
 	versionLabel->alpha.interpolateTo(a, 1);
 }
 
@@ -2133,14 +2133,22 @@ void DSQ::loadMods()
 {
 	modEntries.clear();
 
+	std::string modpath = mod.getBaseModPath();
+	debugLog("loadMods: " + modpath);
+
 #ifdef BBGE_BUILD_VFS
 
 	// first load the packages, then enumerate XMLs
-	forEachFile(mod.getBaseModPath(), ".aqmod", loadModPackagesCallback, 0);
+	forEachFile(modpath, ".aqmod", loadModPackagesCallback, 0);
 #endif
 
-	forEachFile(mod.getBaseModPath(), ".xml", loadModsCallback, 0);
+	forEachFile(modpath, ".xml", loadModsCallback, 0);
 	selectedMod = 0;
+
+	std::ostringstream os;
+	os << "loadMods done, " << modEntries.size() << " entries";
+	debugLog(os.str());
+	exit(0);
 }
 
 void DSQ::applyPatches()
@@ -2149,10 +2157,10 @@ void DSQ::applyPatches()
 #ifdef BBGE_BUILD_VFS
 
 	// This is to allow files in patches to override files in mods on non-win32 systems (theoretically)
-	if(!vfs.GetDir("_mods"))
-	{
-		vfs.Mount(mod.getBaseModPath().c_str(), "_mods");
-	}
+	//if(!vfs.GetDir("_mods"))
+	//{
+	//	vfs.Mount(mod.getBaseModPath().c_str(), "_mods");
+	//}
 
 	loadMods();
 
@@ -2708,7 +2716,7 @@ bool DSQ::onPickedSaveSlot(AquariaSaveSlot *slot)
 		{
 			doit = true;
 		}
-	
+
 		if (doit)
 		{
 			selectedSaveSlot = slot;
@@ -3007,14 +3015,14 @@ void DSQ::title(bool fade)
 	}
 
 	main(1);
-	
+
 	resetTimer();
-	
+
 	if (fade)
 		dsq->sound->stopMusic();
 
 	user.save();
-	
+
 	if (mod.isActive())
 	{
 		mod.shutdown();
@@ -3022,7 +3030,7 @@ void DSQ::title(bool fade)
 
 	// Will be re-loaded on demand
 	unloadMods();
-	
+
 	// VERY important
 	dsq->continuity.reset();
 
@@ -3094,7 +3102,7 @@ void DSQ::hideSaveSlotCrap()
 
 	if (blackout)
 		blackout->alpha = 0;
-	
+
 	if (saveSlotPageCount)
 		saveSlotPageCount->alpha = 0;
 }
@@ -3217,7 +3225,7 @@ void DSQ::doSaveSlotMenu(SaveSlotMode ssm, const Vector &position)
 	}
 
 	saveSlotMode = SSM_NONE;
-	
+
 	createSaveSlots(ssm);
 	const int firstSaveSlot = user.data.savePage * saveSlotPageSize;
 	if (user.data.saveSlot >= firstSaveSlot && user.data.saveSlot < firstSaveSlot + saveSlots.size())
@@ -3392,7 +3400,7 @@ bool DSQ::confirm(const std::string &text, const std::string &image, bool ok, fl
 		yes->useQuad("gui/ok");
 		yes->useGlow("glow", 64, 50);
 		yes->event.set(MakeFunctionEvent(DSQ,onConfirmYes));
-		
+
 		yes->position = Vector(400, 340);
 		addRenderObject(yes, LR_CONFIRM);
 
@@ -3408,7 +3416,7 @@ bool DSQ::confirm(const std::string &text, const std::string &image, bool ok, fl
 		yes->useQuad("yes");
 		yes->useGlow("glow", 64, 50);
 		yes->event.set(MakeFunctionEvent(DSQ,onConfirmYes));
-		
+
 		yes->position = Vector(330, 340);
 		addRenderObject(yes, LR_CONFIRM);
 
@@ -3438,7 +3446,7 @@ bool DSQ::confirm(const std::string &text, const std::string &image, bool ok, fl
 		yes->setDirMove(DIR_DOWN, yes);
 		yes->setDirMove(DIR_LEFT, yes);
 	}
-	
+
 	BitmapText *txt = new BitmapText(&dsq->smallFont);
 	txt->followCamera = 1;
 	txt->position = Vector(400,250);
@@ -4092,7 +4100,7 @@ void DSQ::vision(std::string folder, int num, bool ignoreMusic)
 }
 
 bool DSQ::isDeveloperKeys()
-{	
+{
 #ifdef AQUARIA_DEMO
 	return false;
 #endif
@@ -4120,7 +4128,7 @@ void DSQ::watch(float t, int canQuit)
 	watchForQuit = false;
 
 	bool wasInputEnabled = false;
-	
+
 	if (dsq->game && dsq->game->avatar)
 	{
 		wasInputEnabled = dsq->game->avatar->isInputEnabled();
@@ -4315,13 +4323,13 @@ void DSQ::onUpdate(float dt)
 
 	subtitlePlayer.update(dt);
 
-	
+
 	Core::onUpdate(dt);
 
 	demo.update(dt);
 
 	// HACK: not optimal
-	
+
 	if (inputMode != INPUT_KEYBOARD && game->isActive())
 	{
 		if (almb && (ActionMapper::getKeyState(almb->key[0]) || ActionMapper::getKeyState(almb->key[1])))
@@ -4424,12 +4432,12 @@ void DSQ::onUpdate(float dt)
 			dsq->setInputMode(INPUT_KEYBOARD);
 		}
 	}
-	
+
 	// check the actual values, since mouse.buttons.left might be overwritten by keys
 	int cb = 0;
 	if (user.control.flipInputButtons)
 		cb = 1;
-	
+
 	if (dsq->inputMode == INPUT_KEYBOARD && (core->getMouseButtonState(cb)))
 	{
 		dsq->setInputMode(INPUT_MOUSE);
@@ -4573,7 +4581,7 @@ void DSQ::onUpdate(float dt)
 			cameraOffset = Vector((rand()%int(shakeCameraMag))-shakeCameraMag/2.0f, (rand()%int(shakeCameraMag))-shakeCameraMag/2.0f);
 		}
 	}
-	
+
 	static int lastWidth = 0;
 	static int lastHeight = 0;
 	if (lastWidth != width || lastHeight != height) {
@@ -4581,15 +4589,15 @@ void DSQ::onUpdate(float dt)
 	}
 	lastWidth = width;
 	lastHeight = height;
-	
+
 	static bool lastfullscreen = false;
-	
+
 	if (lastfullscreen != _fullscreen)
 	{
 		setInpGrab = -1;
 	}
 	lastfullscreen = _fullscreen;
-	
+
 	if (game && game->avatar && game->avatar->isInputEnabled() && !game->isPaused() && !game->isInGameMenu())
 	{
 		//debugLog("enabled");
@@ -4608,8 +4616,8 @@ void DSQ::onUpdate(float dt)
 			setInpGrab = 0;
 		}
 	}
-	
-	
+
+
 
 
 	updatepecue(dt);
@@ -4848,7 +4856,7 @@ void DSQ::modifyDt(float &dt)
 
 	if (skippingCutscene)
 		dt = 0.07f;
-	
+
 	gameSpeed.update(dt);
 	dt *= gameSpeed.x;
 

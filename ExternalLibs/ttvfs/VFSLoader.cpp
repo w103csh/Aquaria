@@ -109,8 +109,12 @@ File *DiskLoader::Load(const char *fn, const char * /*ignored*/)
     return vf;
 }
 
+#include <stdio.h>
+
 Dir *DiskLoader::LoadDir(const char *fn, const char * /*ignored*/)
 {
+    printf("DiskLoader: Trying [%s]...\n", fn);
+
     if(!IsDirectory(fn))
         return NULL;
 
@@ -129,6 +133,12 @@ Dir *DiskLoader::LoadDir(const char *fn, const char * /*ignored*/)
 #if !defined(_WIN32) && defined(VFS_IGNORE_CASE)
     VFS_STACK_FREE(t);
 #endif
+
+    if(ret)
+    {
+        printf("DiskLoader: [%s] OK as [%s]\n", fn, ret->fullname());
+    }
+
 
     return ret;
 }

@@ -129,6 +129,8 @@ bool InternalDir::fillView(const char *path, DirView& view)
     return added;
 }
 
+#include <stdio.h>
+
 bool InternalDir::_addToView(char *path, DirView& view)
 {
     bool added = false;
@@ -147,9 +149,16 @@ bool InternalDir::_addToView(char *path, DirView& view)
         char dummy = 0;
         char *slashpos = strchr(path, '/');
         char *tail = slashpos ? slashpos+1 : &dummy;
+        // if the first char is a slash, use "" to lookup
+        //if(slashpos == path)
+        //    path = &dummy;
+
 
         if(slashpos)
             *slashpos = 0;
+
+        printf("InternalDir::_addToView [%s] [%s]\n", path, tail);
+
 
         for(MountedDirs::iterator it = _mountedDirs.begin(); it != _mountedDirs.end(); ++it)
             if(DirBase *subdir = (*it)->getDirByName(path))
