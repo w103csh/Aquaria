@@ -146,12 +146,12 @@ bool InternalDir::_addToView(char *path, DirView& view)
     else
     {
         char dummy = 0;
+        char slash[2] = {'/', 0};
         char *slashpos = strchr(path, '/');
         char *tail = slashpos ? slashpos+1 : &dummy;
-        // if the first char is a slash, use "" to lookup
-        //if(slashpos == path)
-        //    path = &dummy;
-
+        // if the first char is a slash, use "/" to lookup
+        if(slashpos == path)
+            path = &slash[0];
 
         if(slashpos)
             *slashpos = 0;

@@ -56,10 +56,7 @@ std::pair<DirBase*, DirBase*> DirBase::_getDirEx(const char *subdir, const char 
     printf("DirBase::_getDirEx [%s] in [%s]\n", subdir, fullname());
     SkipSelfPath(subdir);
     if(!subdir[0])
-    {
-        DirBase *emptydir = getDirByName(subdir, lazyLoad, useSubtrees);
-        return std::make_pair(emptydir ? emptydir : this, this);
-    }
+        return std::make_pair(this, this);
 
     DirBase *ret = NULL;
     DirBase *last = NULL;
@@ -70,7 +67,7 @@ std::pair<DirBase*, DirBase*> DirBase::_getDirEx(const char *subdir, const char 
     {
         // from a/b/c, cut out the a, without the trailing '/'.
         const char *sub = slashpos + 1;
-        size_t copysize = slashpos - subdir;
+        size_t copysize = std::max(slashpos - subdir, 1); // always copy the '/' if it's the first char
         char * const t = (char*)VFS_STACK_ALLOC(copysize + 1);
         memcpy(t, subdir, copysize);
         t[copysize] = 0;
@@ -132,6 +129,7 @@ DirBase *DirBase::_createAndInsertSubtree(const char *subdir)
 
 DirBase *DirBase::_createNewSubdir(const char *subdir) const
 {
+    assert(*subdir);
     printf("_createNewSubdir: [%s]\n", subdir);
     // -> newname = fullname() + '/' + subdir
     size_t fullLen = fullnameLen();

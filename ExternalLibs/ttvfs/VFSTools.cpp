@@ -356,9 +356,12 @@ void MakeSlashTerminated(std::string& s)
         s += '/';
 }
 
-// extracts the file name from a given path
+// extracts the file name (part after the last /) from a given path
+// returns the string "/" as-is.
 const char *GetBaseNameFromPath(const char *str)
 {
+    if(str[0] == '/' && !str[1])
+        return str;
     const char *p = strrchr(str, '/');
     return p ? p+1 : str;
 }
