@@ -5,6 +5,8 @@
 #include "VFSTools.h"
 #include <algorithm>
 
+#include <stdio.h>
+
 VFS_NAMESPACE_START
 
 
@@ -127,8 +129,6 @@ bool InternalDir::fillView(const char *path, DirView& view)
     VFS_STACK_FREE(pathcopy);
     return added;
 }
-
-#include <stdio.h>
 
 bool InternalDir::_addToView(char *path, DirView& view)
 {

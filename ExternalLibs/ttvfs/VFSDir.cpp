@@ -10,6 +10,8 @@
 #include "VFSDirView.h"
 #include "VFSLoader.h"
 
+#include <stdio.h>
+
 VFS_NAMESPACE_START
 
 DirBase::DirBase(const char *fullpath)
@@ -47,8 +49,6 @@ DirBase *DirBase::getDir(const char *subdir)
     return _getDirEx(subdir, fullpath.c_str(), false, true, true).first;
 }
 
-#include <stdio.h>
-
 // returns requested subdir or NULL as first, and last existing subdir in the tree as second.
 std::pair<DirBase*, DirBase*> DirBase::_getDirEx(const char *subdir, const char * const fullpath,
                                                   bool forceCreate /* = false */, bool lazyLoad /* = true */, bool useSubtrees /* = true */)
@@ -67,7 +67,7 @@ std::pair<DirBase*, DirBase*> DirBase::_getDirEx(const char *subdir, const char 
     {
         // from a/b/c, cut out the a, without the trailing '/'.
         const char *sub = slashpos + 1;
-        size_t copysize = std::max(slashpos - subdir, 1); // always copy the '/' if it's the first char
+        size_t copysize = std::max<size_t>(slashpos - subdir, 1); // always copy the '/' if it's the first char
         char * const t = (char*)VFS_STACK_ALLOC(copysize + 1);
         memcpy(t, subdir, copysize);
         t[copysize] = 0;
@@ -173,6 +173,9 @@ void DirBase::forEachDir(DirEnumCallback f, void *user /* = NULL */, bool safe /
 
 DirBase *DirBase::getDirByName(const char *dn, bool /* unused: lazyLoad = true */, bool useSubtrees /* = true */)
 {
+    if(!dn[0] || (dn[0] == '.' && !dn[1]))
+        return this;
+
     Dirs::iterator it = _subdirs.find(dn);
     return it != _subdirs.end() ? it->second : NULL;
 }

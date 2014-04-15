@@ -5154,11 +5154,11 @@ void Core::setupFileAccess()
 
 
     //vfs.Mount("/", "");
-    ttvfs::DirBase *home = vfs.GetDir("/home/fg");
+    /*ttvfs::DirBase *home = vfs.GetDir("/home/fg");
     if(home)
         debugLog(home->fullname());
     else
-        exit(42);
+        exit(42);*/
 
     //exit(0);
 	vfs.Mount("override", "");

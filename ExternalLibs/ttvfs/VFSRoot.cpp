@@ -15,6 +15,8 @@
 #include "VFSArchiveLoader.h"
 #include "VFSDirView.h"
 
+#include <stdio.h>
+
 #ifdef _DEBUG
 #  include <cassert>
 #  define DEBUG_ASSERT(x) assert(x)
@@ -171,8 +173,6 @@ InternalDir *Root::_GetDirByLoader(VFSLoader *ldr, const char *fn, const char *u
     }
     return ret;
 }
-
-#include <stdio.h>
 
 DirBase *Root::GetDir(const char* dn, bool create /* = false */)
 {
