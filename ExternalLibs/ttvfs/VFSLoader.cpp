@@ -8,6 +8,7 @@
 #include "VFSLoader.h"
 
 #include <stdio.h>
+#include <signal.h>
 
 
 #if !defined(_WIN32) && defined(VFS_IGNORE_CASE)
@@ -113,6 +114,9 @@ File *DiskLoader::Load(const char *fn, const char * /*ignored*/)
 Dir *DiskLoader::LoadDir(const char *fn, const char * /*ignored*/)
 {
     printf("DiskLoader: Trying [%s]...\n", fn);
+
+    if(!strcmp(fn, "override/home"))
+        raise(SIGTRAP);
 
     if(/* *fn != '/' &&*/ !IsDirectory(fn))
         return NULL;

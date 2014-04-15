@@ -243,7 +243,7 @@ static void _DumpFile(File *vf, void *user)
 static void _DumpDir(DirBase *vd, void *user)
 {
     _DbgParams& p = *((_DbgParams*)user);
-    if(!(vd->fullname()[0] == '/' && vd->fullnameLen() > 1)) // don't recurse down the root dir.
+    if(!(vd->fullname()[0] == '/' && vd->fullnameLen() == 1)) // don't recurse down the root dir.
         p.dirnames.insert(vd->name());
     p.os << p.sp << "D : " << vd->fullname() << " [" << vd->getType() << ", ref " << vd->getRefCount() << ", 0x" << vd << "]" << std::endl;
 }

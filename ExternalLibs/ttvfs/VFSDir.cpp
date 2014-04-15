@@ -32,10 +32,10 @@ File *DirBase::getFile(const char *fn)
     if(!slashpos)
         return getFileByName(fn, true);
 
-    const size_t len = slashpos - fn;
-    char *dirname = (char*)VFS_STACK_ALLOC(len + 1);
-    memcpy(dirname, fn, len);
-    dirname[len] = 0;
+    size_t copysize = std::max<size_t>(slashpos - fn, 1); // always copy the '/' if it's the first char
+    char * const dirname = (char*)VFS_STACK_ALLOC(copysize + 1);
+    memcpy(dirname, fn, copysize);
+    dirname[copysize] = 0;
 
     File *f = getFileFromSubdir(dirname, slashpos + 1);
     VFS_STACK_FREE(dirname);
@@ -312,6 +312,10 @@ DirBase *Dir::getDirByName(const char *dn, bool lazyLoad /* = true */, bool useS
         return sub;
 
     if(!lazyLoad || !_loader)
+        return NULL;
+
+    // Fix for absolute paths: No dir should have '/' (or any other absolute dirs) as subdir.
+    if(fullnameLen() && dn[0] == '/')
         return NULL;
 
     // Lazy-load file if it's not in the tree yet

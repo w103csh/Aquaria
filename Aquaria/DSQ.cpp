@@ -744,6 +744,12 @@ void DSQ::debugMenu()
                         vfs.debugDumpTree(out, "", -1);
                         out.close();
                     }
+                    std::ofstream out2("filetree-moddir.txt");
+                    if(out2)
+                    {
+                        vfs.debugDumpTree(out2, mod.getBaseModPath().c_str(), -1);
+                        out2.close();
+                    }
                 }
 			}
 
